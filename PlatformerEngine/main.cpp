@@ -20,72 +20,67 @@
 // Here is a small helper for you! Have a look.
 #include "ResourcePath.hpp"
 
-int main(int, char const**)
-{
-    // Create the main window
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
+// Engine headers
+#include "game/Character.hpp"
 
-    // Set the Icon
-    sf::Image icon;
-    if (!icon.loadFromFile(resourcePath() + "icon.png")) {
-        return EXIT_FAILURE;
-    }
-    window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+int main(int, char const**) {
+  // Setup window
+  sf::RenderWindow window(sf::VideoMode(640, 400), "PlatformerEngine");
 
-    // Load a sprite to display
-    sf::Texture texture;
-    if (!texture.loadFromFile(resourcePath() + "cute_image.jpg")) {
-        return EXIT_FAILURE;
-    }
-    sf::Sprite sprite(texture);
+  sf::Image icon;
+  if (!icon.loadFromFile(resourcePath() + "icon.png")) {
+    return EXIT_FAILURE;
+  }
+  window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
-    // Create a graphical text to display
-    sf::Font font;
-    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
-        return EXIT_FAILURE;
-    }
-    sf::Text text("Hello SFML", font, 50);
-    text.setFillColor(sf::Color::Black);
+  // Initialize
+//  sf::Texture texture;
+//  if (!texture.loadFromFile(resourcePath() + "cute_image.jpg")) {
+//    return EXIT_FAILURE;
+//  }
+//  sf::Sprite sprite(texture);
+//
+//  sf::Font font;
+//  if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
+//    return EXIT_FAILURE;
+//  }
+//  sf::Text text("Hello SFML", font, 50);
+//  text.setFillColor(sf::Color::Black);
 
-    // Load a music to play
-    sf::Music music;
-    if (!music.openFromFile(resourcePath() + "nice_music.ogg")) {
-        return EXIT_FAILURE;
-    }
+  Character player(320, 60, 12, 40);
 
-    // Play the music
-    music.play();
+  // Game loop
+  sf::Clock clock;
+  while (window.isOpen()) {
+    // Handle events
+    sf::Event event;
+    while (window.pollEvent(event)) {
+      if (event.type == sf::Event::Closed) {
+        window.close();
+      }
 
-    // Start the game loop
-    while (window.isOpen())
-    {
-        // Process events
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            // Close window: exit
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
-
-            // Escape pressed: exit
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-                window.close();
-            }
-        }
-
-        // Clear screen
-        window.clear();
-
-        // Draw the sprite
-        window.draw(sprite);
-
-        // Draw the string
-        window.draw(text);
-
-        // Update the window
-        window.display();
+      if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+        window.close();
+      }
     }
 
-    return EXIT_SUCCESS;
+
+    // Update
+    sf::Time dt = clock.restart();
+
+    // - Update player
+    player.Update(dt);
+
+
+    // Draw
+    window.clear();
+
+    // - Draw player
+    window.draw(player.sprite);
+
+    // Flush and render to screen
+    window.display();
+  }
+
+  return EXIT_SUCCESS;
 }
