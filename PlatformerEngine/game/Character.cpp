@@ -40,6 +40,14 @@ void Character::Update(sf::Time dt) {
         break;
       }
 
+      // Drop from one-way platform
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+        if (this->onOneWayPlatform) {
+          this->position.y += ONE_WAY_PLATFORM_THRESHOD;
+          //printf("Try to drop from the one-way platform\n");
+        }
+      }
+
       break;
 
     case WALK:

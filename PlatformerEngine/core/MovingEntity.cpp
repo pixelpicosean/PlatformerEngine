@@ -36,8 +36,7 @@ void MovingEntity::Update(Time dt) {
 
   // Ground detection
   float groundY = 0.0f;
-  bool onOneWayPlatform = false;
-  if (this->speed.y >= 0.0f && this->HasGround(this->lastPosition, this->position, this->speed, groundY, onOneWayPlatform)) {
+  if (this->speed.y >= 0.0f && this->HasGround(this->lastPosition, this->position, this->speed, groundY, this->onOneWayPlatform)) {
     this->position.y = groundY - this->aabb.halfSize.y - this->aabbOffset.y;
     this->speed.y = 0.0f;
     this->isOnGround = true;
@@ -68,16 +67,15 @@ bool MovingEntity::HasGround(const sf::Vector2f &oldPos, const sf::Vector2f &pos
     groundY = tileY * this->map.tilesize - this->map.tilesize / 2.0f + this->map.position.y;
 
     if (this->map.IsObstacle(tileX, tileY)) {
+      onOneWayPlatform = false;
       return true;
     }
-    else if (this->map.IsOneWayPlatform(tileX, tileY) && (std::abs(checkedTile.y - groundY) <= ONE_WAY_PLATFORM_THRESHOD + position.y - oldPos.y)) {
+    else if (this->map.IsOneWayPlatform(tileX, tileY) && (std::abs(checkedTile.y - groundY) <= ONE_WAY_PLATFORM_THRESHOD + (position.y - oldPos.y))) {
       onOneWayPlatform = true;
+      return true;
     }
 
     if (checkedTile.x >= bottomRight.x) {
-      if (onOneWayPlatform) {
-        return true;
-      }
       break;
     }
   }
