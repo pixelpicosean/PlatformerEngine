@@ -12,6 +12,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "../physics/AABB.hpp"
+#include "Map.hpp"
 
 using namespace sf;
 
@@ -35,10 +36,15 @@ class MovingEntity {
     bool wasOnGround, isOnGround;
     bool wasAtCeiling, isAtCeiling;
 
+    // Components
+    Map& map;
+
   public:
-    MovingEntity(float x, float y, float w, float h);
+    MovingEntity(float x, float y, float w, float h, Map& map);
 
     void Update(Time dt);
+
+    bool HasGround(const sf::Vector2f& oldPos, const sf::Vector2f& position, const sf::Vector2f& speed, float& groundY);
 };
 
 #endif /* MovingEntity_hpp */

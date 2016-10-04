@@ -35,7 +35,7 @@ class Character : public MovingEntity {
 
   // Methods
   public:
-    Character(float x, float y, float w, float h);
+    Character(float x, float y, float w, float h, Map& map);
 
     void Update(sf::Time dt);
 };

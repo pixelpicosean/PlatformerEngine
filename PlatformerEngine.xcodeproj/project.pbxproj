@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		14667BF31DA1F3A8007CFA81 /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14667BF11DA1F3A8007CFA81 /* Map.cpp */; };
 		14A738701DA1082F00F663B9 /* ResourcePath.mm in Sources */ = {isa = PBXBuildFile; fileRef = 14A7386F1DA1082F00F663B9 /* ResourcePath.mm */; };
 		14A738731DA1082F00F663B9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14A738721DA1082F00F663B9 /* main.cpp */; };
 		14A738831DA108C000F663B9 /* media in Resources */ = {isa = PBXBuildFile; fileRef = 14A738821DA108C000F663B9 /* media */; };
@@ -16,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		14667BF11DA1F3A8007CFA81 /* Map.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Map.cpp; path = core/Map.cpp; sourceTree = "<group>"; };
+		14667BF21DA1F3A8007CFA81 /* Map.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Map.hpp; path = core/Map.hpp; sourceTree = "<group>"; };
 		14A7386A1DA1082F00F663B9 /* PlatformerEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlatformerEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14A7386E1DA1082F00F663B9 /* PlatformerEngine-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PlatformerEngine-Info.plist"; sourceTree = "<group>"; };
 		14A7386F1DA1082F00F663B9 /* ResourcePath.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourcePath.mm; sourceTree = "<group>"; };
@@ -94,6 +97,8 @@
 			children = (
 				14A738881DA1232F00F663B9 /* MovingEntity.cpp */,
 				14A738891DA1232F00F663B9 /* MovingEntity.hpp */,
+				14667BF11DA1F3A8007CFA81 /* Map.cpp */,
+				14667BF21DA1F3A8007CFA81 /* Map.hpp */,
 			);
 			name = core;
 			sourceTree = "<group>";
@@ -193,6 +198,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14667BF31DA1F3A8007CFA81 /* Map.cpp in Sources */,
 				14A738861DA109E600F663B9 /* AABB.cpp in Sources */,
 				14A7388A1DA1232F00F663B9 /* MovingEntity.cpp in Sources */,
 				14A738731DA1082F00F663B9 /* main.cpp in Sources */,
@@ -329,6 +335,7 @@
 				14A738811DA1082F00F663B9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

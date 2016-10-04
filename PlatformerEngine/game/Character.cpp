@@ -10,10 +10,9 @@
 #include <cmath>
 
 const float GRAVITY = 980.0f;
-
 const float MAX_FALL_SPEED = 300.0f;
 
-Character::Character(float x, float y, float w, float h): MovingEntity(x, y, w, h) {
+Character::Character(float x, float y, float w, float h, Map& map): MovingEntity(x, y, w, h, map) {
   this->sprite.setSize(sf::Vector2f(w, h));
   this->sprite.setFillColor(sf::Color(150, 50, 250));
 }
