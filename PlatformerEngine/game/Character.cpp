@@ -92,7 +92,7 @@ void Character::Update(sf::Time dt) {
       }
       // - Jump
       if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && this->speed.y < 0.0f) {
-        this->speed.y = -std::fmin(std::fabs(this->speed.y), this->minJumpSpeed);
+        this->speed.y = -std::fmin(std::abs(this->speed.y), this->minJumpSpeed);
       }
 
       // Horizontal movement

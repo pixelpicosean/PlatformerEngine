@@ -16,6 +16,9 @@
 
 using namespace sf;
 
+/* Won't check collision if character is 2 pixels below the top surface */
+const float ONE_WAY_PLATFORM_THRESHOD = 2.0f;
+
 class MovingEntity {
   public:
     Vector2f lastPosition;
@@ -36,6 +39,8 @@ class MovingEntity {
     bool wasOnGround, isOnGround;
     bool wasAtCeiling, isAtCeiling;
 
+    bool onOneWayPlatform = false;
+
     // Components
     Map& map;
 
@@ -44,7 +49,7 @@ class MovingEntity {
 
     void Update(Time dt);
 
-    bool HasGround(const sf::Vector2f& oldPos, const sf::Vector2f& position, const sf::Vector2f& speed, float& groundY);
+    bool HasGround(const sf::Vector2f& oldPos, const sf::Vector2f& position, const sf::Vector2f& speed, float& groundY, bool& onOneWayPlatform);
 };
 
 #endif /* MovingEntity_hpp */

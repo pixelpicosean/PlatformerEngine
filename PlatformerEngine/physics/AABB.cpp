@@ -14,7 +14,7 @@ AABB::AABB(Vector2f center, Vector2f halfSize):
 {}
 
 bool AABB::Overlap(const AABB& other) {
-  if (std::fabs(this->center.x - other.center.x) > (this->halfSize.x + other.halfSize.x)) return false;
-  if (std::fabs(this->center.y - other.center.y) > (this->halfSize.y + other.halfSize.y)) return false;
+  if (std::abs(this->center.x - other.center.x) > (this->halfSize.x + other.halfSize.x)) return false;
+  if (std::abs(this->center.y - other.center.y) > (this->halfSize.y + other.halfSize.y)) return false;
   return true;
 }
