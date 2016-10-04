@@ -14,7 +14,7 @@ const float MAX_FALL_SPEED = 300.0f;
 
 Character::Character(float x, float y, float w, float h, Map& map): MovingEntity(x, y, w, h, map) {
   this->sprite.setSize(sf::Vector2f(w, h));
-  this->sprite.setFillColor(sf::Color(150, 50, 250));
+  this->sprite.setOrigin(w / 2, h / 2);
 }
 
 void Character::Update(sf::Time dt) {
@@ -141,4 +141,8 @@ void Character::Update(sf::Time dt) {
 
   // Update components
   this->sprite.setPosition(this->position);
+}
+
+void Character::Draw(sf::RenderTarget& frame) {
+  frame.draw(this->sprite);
 }

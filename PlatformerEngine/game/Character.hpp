@@ -38,6 +38,7 @@ class Character : public MovingEntity {
     Character(float x, float y, float w, float h, Map& map);
 
     void Update(sf::Time dt);
+    void Draw(sf::RenderTarget& frame);
 };
 
 #endif /* Character_hpp */

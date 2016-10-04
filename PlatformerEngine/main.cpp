@@ -48,7 +48,7 @@ int main(int, char const**) {
 //  sf::Text text("Hello SFML", font, 50);
 //  text.setFillColor(sf::Color::Black);
 
-  Map map({
+  Map map(8, 8, {
     { 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1 },
     { 1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1 },
     { 1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1 },
@@ -73,7 +73,8 @@ int main(int, char const**) {
     { 1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1 },
     { 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1 },
   });
-  Character player(40, 40, 12, 40, map);
+
+  Character player(100, 100, 12, 40, map);
 
   // Game loop
   sf::Clock clock;
@@ -101,8 +102,10 @@ int main(int, char const**) {
     // Draw
     window.clear();
 
+    // - Draw map
+    map.Draw(window);
     // - Draw player
-    window.draw(player.sprite);
+    player.Draw(window);
 
     // Flush and render to screen
     window.display();

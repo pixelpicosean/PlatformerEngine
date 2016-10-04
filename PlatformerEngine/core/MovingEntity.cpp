@@ -34,15 +34,10 @@ void MovingEntity::Update(Time dt) {
   // Update velocity
   this->position += (this->speed * dt.asSeconds());
 
-  //printf("(%.2f, %.2f)\n", this->position.x, this->position.y);
-
   // Ground detection
   float groundY = 0.0f;
-  //auto hasGround = this->HasGround(this->lastPosition, this->position, this->speed, groundY);
-  //printf("Ground: %s\n", hasGround ? "true" : "false");
   if (this->speed.y >= 0.0f && this->HasGround(this->lastPosition, this->position, this->speed, groundY)) {
-    //printf("groundY: %.2f\n", groundY);
-    this->position.y = groundY - this->aabb.halfSize.y + this->aabbOffset.y;
+    this->position.y = groundY - this->aabb.halfSize.y - this->aabbOffset.y;
     this->speed.y = 0.0f;
     this->isOnGround = true;
   }
@@ -62,19 +57,14 @@ bool MovingEntity::HasGround(const sf::Vector2f &oldPos, const sf::Vector2f &pos
   auto bottomLeft = Vector2f(center.x - this->aabb.halfSize.x, center.y + this->aabb.halfSize.y) - UP - RIGHT;
   auto bottomRight = Vector2f(bottomLeft.x + this->aabb.halfSize.x * 2.0f + 2.0f, bottomLeft.y);
 
-  //printf("(%.2f, %.2f)\n", position.x, position.y);
-  //printf("(%.2f, %.2f)\n", bottomLeft.x, bottomLeft.y);
-
   int tileX, tileY;
   for (auto checkedTile = bottomLeft;; checkedTile.x += this->map.tilesize) {
     checkedTile.x = std::fmin(checkedTile.x, bottomRight.x);
 
     tileX = this->map.GetMapTileXAtPoint(checkedTile.x);
     tileY = this->map.GetMapTileYAtPoint(checkedTile.y);
-    //printf("(%d, %d)\n", tileX, tileY);
-    //printf("(%.2f, %.2f)\n", checkedTile.x, checkedTile.y);
 
-    groundY = tileY * this->map.tilesize /*+ this->map.tilesize / 2.0f*/ + this->map.position.y;
+    groundY = tileY * this->map.tilesize - this->map.tilesize / 2.0f + this->map.position.y;
 
     if (this->map.IsObstacle(tileX, tileY)) {
       return true;

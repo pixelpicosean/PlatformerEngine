@@ -28,7 +28,10 @@ class Map {
     Vector2f position;
 
   public:
-    Map(const std::vector<std::vector<TileType> >& tiles);
+    Map(float x, float y, const std::vector<std::vector<TileType> >& tiles);
+
+    // Property setters
+    void SetPosition(float x, float y);
 
     // Tile <-> Position
     Vector2i GetMapTileAtPoint(float x, float y);
@@ -45,8 +48,14 @@ class Map {
     bool IsOneWayPlatform(int x, int y);
     bool IsEmpty(int x, int y);
 
+    // Tick and Render
+    void Draw(sf::RenderTarget& frame);
+
   private:
     std::vector<std::vector<TileType> > tiles;
+
+    // Dev drawing properties
+    std::vector<std::vector<sf::RectangleShape> > tileShapes;
 };
 
 #endif /* Map_hpp */
