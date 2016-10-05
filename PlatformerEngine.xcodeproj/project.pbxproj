@@ -19,6 +19,7 @@
 /* Begin PBXFileReference section */
 		14667BF11DA1F3A8007CFA81 /* Map.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Map.cpp; path = core/Map.cpp; sourceTree = "<group>"; };
 		14667BF21DA1F3A8007CFA81 /* Map.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Map.hpp; path = core/Map.hpp; sourceTree = "<group>"; };
+		14667BF41DA3DADA007CFA81 /* Math.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Math.hpp; path = utils/Math.hpp; sourceTree = "<group>"; };
 		14A7386A1DA1082F00F663B9 /* PlatformerEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlatformerEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14A7386E1DA1082F00F663B9 /* PlatformerEngine-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PlatformerEngine-Info.plist"; sourceTree = "<group>"; };
 		14A7386F1DA1082F00F663B9 /* ResourcePath.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourcePath.mm; sourceTree = "<group>"; };
@@ -44,6 +45,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		14667BF51DA3DB40007CFA81 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				14667BF41DA3DADA007CFA81 /* Math.hpp */,
+			);
+			name = utils;
+			sourceTree = "<group>";
+		};
 		14A738601DA1082E00F663B9 = {
 			isa = PBXGroup;
 			children = (
@@ -69,6 +78,7 @@
 				14A7386F1DA1082F00F663B9 /* ResourcePath.mm */,
 				14A738711DA1082F00F663B9 /* ResourcePath.hpp */,
 				14A738721DA1082F00F663B9 /* main.cpp */,
+				14667BF51DA3DB40007CFA81 /* utils */,
 				14A738821DA108C000F663B9 /* media */,
 				14A7386D1DA1082F00F663B9 /* Supporting Files */,
 			);
