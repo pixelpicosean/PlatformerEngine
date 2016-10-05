@@ -67,32 +67,41 @@ bool MovingEntity::HasGround(const sf::Vector2f &oldPos, const sf::Vector2f &pos
   auto center = position + this->aabbOffset;
 
   auto lastBottomLeft = Vector2f(lastCenter.x - this->aabb.halfSize.x, lastCenter.y + this->aabb.halfSize.y) - UP - RIGHT;
-  auto bottomLeft = Vector2f(center.x - this->aabb.halfSize.x, center.y + this->aabb.halfSize.y) - UP - RIGHT;
-  auto bottomRight = Vector2f(bottomLeft.x + this->aabb.halfSize.x * 2.0f + 2.0f, bottomLeft.y);
+  auto currBottomLeft = Vector2f(center.x - this->aabb.halfSize.x, center.y + this->aabb.halfSize.y) - UP - RIGHT;
+  auto currBottomRight = Vector2f(currBottomLeft.x + this->aabb.halfSize.x * 2.0f + 2.0f, currBottomLeft.y);
 
-  int tileX, tileY;
-  for (auto checkedTile = bottomLeft;; checkedTile.x += this->map.tilesize) {
-    checkedTile.x = std::min(checkedTile.x, bottomRight.x);
+  int endY = this->map.GetMapTileYAtPoint(currBottomLeft.y);
+  int begY = std::max(this->map.GetMapTileYAtPoint(lastBottomLeft.y) - 1, endY);
+  int dist = std::max(std::abs(endY - begY), 1);
 
-    tileX = this->map.GetMapTileXAtPoint(checkedTile.x);
-    tileY = this->map.GetMapTileYAtPoint(checkedTile.y);
+  int tileX;
+  for (int tileY = begY; tileY >= endY; --tileY) {
+    auto bottomLeft = LerpVector2f(currBottomLeft, lastBottomLeft, std::abs(tileY - endY) / (float)dist);
+    auto bottomRight = Vector2f(bottomLeft.x + this->aabb.halfSize.x * 2.0f + 2.0f, bottomLeft.y);
 
-    groundY = tileY * this->map.tilesize - this->map.tilesize / 2.0f + this->map.position.y;
+    for (auto checkedTile = currBottomLeft;; checkedTile.x += this->map.tilesize) {
+      checkedTile.x = std::min(checkedTile.x, currBottomRight.x);
 
-    if (this->map.IsObstacle(tileX, tileY)) {
-      onOneWayPlatform = false;
-      return true;
-    }
-    else if (this->map.IsOneWayPlatform(tileX, tileY) && (std::abs(checkedTile.y - groundY) <= ONE_WAY_PLATFORM_THRESHOD + (position.y - oldPos.y))) {
-      onOneWayPlatform = true;
-      return true;
-    }
+      tileX = this->map.GetMapTileXAtPoint(checkedTile.x);
+      tileY = this->map.GetMapTileYAtPoint(checkedTile.y);
 
-    if (checkedTile.x >= bottomRight.x) {
-      break;
+      groundY = tileY * this->map.tilesize - this->map.tilesize / 2.0f + this->map.position.y;
+
+      if (this->map.IsObstacle(tileX, tileY)) {
+        onOneWayPlatform = false;
+        return true;
+      }
+      else if (this->map.IsOneWayPlatform(tileX, tileY) && (std::abs(checkedTile.y - groundY) <= ONE_WAY_PLATFORM_THRESHOD + (position.y - oldPos.y))) {
+        onOneWayPlatform = true;
+        return true;
+      }
+
+      if (checkedTile.x >= currBottomRight.x) {
+        break;
+      }
     }
   }
-  
+
   return false;
 }
 
