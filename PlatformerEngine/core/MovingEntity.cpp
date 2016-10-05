@@ -8,7 +8,7 @@
 
 #include "MovingEntity.hpp"
 
-#include <cmath>
+#include "../utils/Math.hpp"
 
 const sf::Vector2f UP =     {  0.0f, -1.0f };
 const sf::Vector2f RIGHT =  { +1.0f,  0.0f };
@@ -34,7 +34,8 @@ void MovingEntity::Update(Time dt) {
   // Update velocity
   this->position += (this->speed * dt.asSeconds());
 
-  // Ground detection
+  // Map collision detection
+  // - Ground
   float groundY = 0.0f;
   if (this->speed.y >= 0.0f && this->HasGround(this->lastPosition, this->position, this->speed, groundY, this->onOneWayPlatform)) {
     this->position.y = groundY - this->aabb.halfSize.y - this->aabbOffset.y;
@@ -43,6 +44,18 @@ void MovingEntity::Update(Time dt) {
   }
   else {
     this->isOnGround = false;
+  }
+
+  // - Ceiling
+  float ceilingY = 0.0f; static int c = 0;
+  if (this->speed.y <= 0.0f && this->HasCeiling(this->lastPosition, this->position, ceilingY)) {
+    //printf("[%d] Touch ceiling at Y: %.2f | Ceiling: %.2f\n", c++, this->position.y, ceilingY);
+    //this->position.y = ceilingY + this->aabb.halfSize.y - this->aabbOffset.y;
+    this->speed.y = 0.0f;
+    this->isAtCeiling = true;
+  }
+  else {
+    this->isAtCeiling = false;
   }
 
   // Update AABB
@@ -59,7 +72,7 @@ bool MovingEntity::HasGround(const sf::Vector2f &oldPos, const sf::Vector2f &pos
 
   int tileX, tileY;
   for (auto checkedTile = bottomLeft;; checkedTile.x += this->map.tilesize) {
-    checkedTile.x = std::fmin(checkedTile.x, bottomRight.x);
+    checkedTile.x = std::min(checkedTile.x, bottomRight.x);
 
     tileX = this->map.GetMapTileXAtPoint(checkedTile.x);
     tileY = this->map.GetMapTileYAtPoint(checkedTile.y);
@@ -80,5 +93,44 @@ bool MovingEntity::HasGround(const sf::Vector2f &oldPos, const sf::Vector2f &pos
     }
   }
   
+  return false;
+}
+
+bool MovingEntity::HasCeiling(const sf::Vector2f &oldPos, const sf::Vector2f &position, float &ceilingY) {
+  auto center = position + this->aabbOffset;
+  auto lastCenter = oldPos + this->aabbOffset;
+
+  ceilingY = 0.0f;
+
+  auto lastTopRight = lastCenter - this->aabb.halfSize - UP + RIGHT;
+
+  auto currTopRight = center - this->aabb.halfSize - UP + RIGHT;
+  auto currTopLeft = Vector2f(currTopRight.x - this->aabb.halfSize.x * 2.0f - 2.0f, currTopRight.y);
+
+  int endY = this->map.GetMapTileYAtPoint(currTopRight.y);
+  int begY = std::min(this->map.GetMapTileYAtPoint(lastTopRight.y) + 1, endY);
+  int dist = std::max(std::abs(endY - begY), 1);
+
+  int tileX;
+  for (int tileY = begY; tileY >= endY; --tileY) {
+    auto topRight = LerpVector2f(currTopRight, lastTopRight, std::abs(endY - tileY) / (float)dist);
+    auto topLeft = Vector2f(topRight.x - this->aabb.halfSize.x * 2.0f - 2.0f, topRight.y);
+
+    for (auto checkedTile = topLeft;; checkedTile.x += this->map.tilesize) {
+      checkedTile.x = std::min(checkedTile.x, topRight.x);
+
+      tileX = this->map.GetMapTileXAtPoint(checkedTile.x);
+
+      if (this->map.IsObstacle(tileX, tileY)) {
+        ceilingY = tileY * this->map.tilesize + this->map.tilesize / 2.0f + this->map.position.y;
+        return true;
+      }
+
+      if (checkedTile.x >= topRight.x) {
+        break;
+      }
+    }
+  }
+
   return false;
 }

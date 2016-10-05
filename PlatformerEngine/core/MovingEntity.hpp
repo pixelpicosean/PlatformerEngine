@@ -50,6 +50,7 @@ class MovingEntity {
     void Update(Time dt);
 
     bool HasGround(const sf::Vector2f& oldPos, const sf::Vector2f& position, const sf::Vector2f& speed, float& groundY, bool& onOneWayPlatform);
+    bool HasCeiling(const sf::Vector2f& oldPos, const sf::Vector2f& position, float& ceilingY);
 };
 
 #endif /* MovingEntity_hpp */
