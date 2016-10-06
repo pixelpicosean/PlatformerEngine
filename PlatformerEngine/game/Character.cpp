@@ -200,9 +200,18 @@ void Character::Update(sf::Time dt) {
       break;
 
     case GRAB_LEDGE:
-      break;
+      bool ledgeOnLeft = this->ledgeTile.x * this->map.tilesize < this->position.x;
+      bool ledgeOnRight = !ledgeOnLeft;
 
-    default:
+      // Drop by either press the opposite direction or the down key
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || (ledgeOnLeft && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) || (ledgeOnRight && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))) {
+        this->currentState = JUMP;
+      }
+      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        this->speed.y = -this->jumpSpeed;
+        this->currentState = JUMP;
+      }
+
       break;
   }
 
