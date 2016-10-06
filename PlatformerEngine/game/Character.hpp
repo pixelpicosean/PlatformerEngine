@@ -14,11 +14,18 @@
 class Character : public MovingEntity {
   // Enums
   public:
-    enum State {
-      STAND,
-      WALK,
-      JUMP,
-      GRAB_LEDGE,
+    enum class State {
+      Stand,
+      Walk,
+      Jump,
+      GrabLedge,
+    };
+
+    enum class Input {
+      Left,
+      Right,
+      Down,
+      Jump,
     };
 
   // Configs
@@ -31,7 +38,7 @@ class Character : public MovingEntity {
   public:
     sf::RectangleShape sprite;
 
-    State currentState = STAND;
+    State currentState = State::Stand;
 
   // Methods
   public:

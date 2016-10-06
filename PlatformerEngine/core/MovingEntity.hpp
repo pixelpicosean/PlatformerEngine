@@ -27,8 +27,6 @@ class MovingEntity {
     Vector2f lastSpeed;
     Vector2f speed;
 
-    Vector2f scale = { 1.0f, 1.0f };
-
     // AABB
     AABB aabb;
     Vector2f aabbOffset;

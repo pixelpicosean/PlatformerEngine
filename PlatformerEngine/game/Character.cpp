@@ -24,23 +24,23 @@ Character::Character(float x, float y, float w, float h, Map& map): MovingEntity
 void Character::Update(sf::Time dt) {
   // Update states
   switch (this->currentState) {
-    case STAND:
+    case State::Stand:
       this->sprite.setFillColor(sf::Color(255, 255, 255));
 
       this->speed.x = this->speed.y = 0.0f;
 
       if (!this->isOnGround) {
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
         break;
       }
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) != sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        this->currentState = WALK;
+        this->currentState = State::Walk;
         break;
       }
       else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
         this->speed.y = -this->jumpSpeed;
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
         break;
       }
 
@@ -53,12 +53,12 @@ void Character::Update(sf::Time dt) {
 
       break;
 
-    case WALK:
+    case State::Walk:
       this->sprite.setFillColor(sf::Color(125, 255, 125));
 
       // Horizontal movement
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) == sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        this->currentState = STAND;
+        this->currentState = State::Stand;
         this->speed.x = this->speed.y = 0.0f;
         break;
       }
@@ -82,11 +82,11 @@ void Character::Update(sf::Time dt) {
       // Jump
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
         this->speed.y = -this->jumpSpeed;
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
         break;
       }
       else if (!this->isOnGround) {
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
         break;
       }
 
@@ -99,7 +99,7 @@ void Character::Update(sf::Time dt) {
 
       break;
 
-    case JUMP:
+    case State::Jump:
       this->sprite.setFillColor(sf::Color(150, 50, 250));
 
       // Vertical movement
@@ -137,11 +137,11 @@ void Character::Update(sf::Time dt) {
 
       if (this->isOnGround) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) == sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-          this->currentState = STAND;
+          this->currentState = State::Stand;
           this->speed.x = this->speed.y = 0.0f;
         }
         else {
-          this->currentState = WALK;
+          this->currentState = State::Walk;
           this->speed.y = 0.0f;
         }
       }
@@ -190,7 +190,7 @@ void Character::Update(sf::Time dt) {
               this->speed.x = this->speed.y = 0.0f;
 
               // Change state
-              this->currentState = GRAB_LEDGE;
+              this->currentState = State::GrabLedge;
               break;
             }
           }
@@ -199,17 +199,17 @@ void Character::Update(sf::Time dt) {
 
       break;
 
-    case GRAB_LEDGE:
+    case State::GrabLedge:
       bool ledgeOnLeft = this->ledgeTile.x * this->map.tilesize < this->position.x;
       bool ledgeOnRight = !ledgeOnLeft;
 
       // Drop by either press the opposite direction or the down key
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || (ledgeOnLeft && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) || (ledgeOnRight && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))) {
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
       }
       else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
         this->speed.y = -this->jumpSpeed;
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
       }
 
       break;
