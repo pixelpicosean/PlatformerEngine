@@ -19,4 +19,10 @@ sf::Vector2f LerpVector2f(const sf::Vector2f& a, const sf::Vector2f& b, float fc
   };
 }
 
+sf::Vector2f& RoundVector2f(sf::Vector2f& v) {
+  v.x = std::round(v.x);
+  v.y = std::round(v.y);
+  return v;
+}
+
 #endif /* Math_hpp */
