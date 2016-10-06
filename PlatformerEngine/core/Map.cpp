@@ -28,6 +28,7 @@ Map::Map(float x, float y, const std::vector<std::vector<TileType> >& tiles):
         tile.setFillColor(BLOCK_COLOR);
       }
       else if (tiles[r][q] == 2) {
+        tile.setSize({ (float)this->tilesize, (float)this->tilesize / 2.0f });
         tile.setFillColor(ONE_WAY_COLOR);
       }
 
