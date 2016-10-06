@@ -18,7 +18,7 @@ class Character : public MovingEntity {
       STAND,
       WALK,
       JUMP,
-      GRAB_EDGE,
+      GRAB_LEDGE,
     };
 
   // Configs
@@ -39,6 +39,9 @@ class Character : public MovingEntity {
 
     void Update(sf::Time dt);
     void Draw(sf::RenderTarget& frame);
+
+  private:
+    sf::Vector2i ledgeTile;
 };
 
 #endif /* Character_hpp */
