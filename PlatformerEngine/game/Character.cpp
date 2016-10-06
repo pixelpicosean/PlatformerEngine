@@ -96,11 +96,11 @@ void Character::Update(sf::Time dt) {
       this->speed.y += GRAVITY * dt.asSeconds();
       // - Fall
       if (this->speed.y > 0.0f) {
-        this->speed.y = std::fmax(this->speed.y, MAX_FALL_SPEED);
+        this->speed.y = std::max(this->speed.y, MAX_FALL_SPEED);
       }
       // - Jump
       if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && this->speed.y < 0.0f) {
-        this->speed.y = -std::fmin(std::abs(this->speed.y), this->minJumpSpeed);
+        this->speed.y = -std::min(std::abs(this->speed.y), this->minJumpSpeed);
       }
 
       // Horizontal movement
