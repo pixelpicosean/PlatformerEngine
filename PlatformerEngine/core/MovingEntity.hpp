@@ -51,6 +51,8 @@ class MovingEntity {
 
     bool HasGround(const sf::Vector2f& oldPos, const sf::Vector2f& position, const sf::Vector2f& speed, float& groundY, bool& onOneWayPlatform);
     bool HasCeiling(const sf::Vector2f& oldPos, const sf::Vector2f& position, float& ceilingY);
+    bool CollideWithLeftWall(const sf::Vector2f& oldPos, const sf::Vector2f& position, float& wallX);
+    bool CollideWithRightWall(const sf::Vector2f& oldPos, const sf::Vector2f& position, float& wallX);
 };
 
 #endif /* MovingEntity_hpp */
