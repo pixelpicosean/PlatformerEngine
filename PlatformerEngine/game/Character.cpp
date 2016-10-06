@@ -44,7 +44,6 @@ void Character::Update(sf::Time dt) {
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
         if (this->onOneWayPlatform) {
           this->position.y += ONE_WAY_PLATFORM_THRESHOD;
-          //printf("Try to drop from the one-way platform\n");
         }
       }
 
@@ -86,6 +85,14 @@ void Character::Update(sf::Time dt) {
         this->currentState = JUMP;
         break;
       }
+
+      // Drop from one-way platform
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+        if (this->onOneWayPlatform) {
+          this->position.y += ONE_WAY_PLATFORM_THRESHOD;
+        }
+      }
+
       break;
 
     case JUMP:
