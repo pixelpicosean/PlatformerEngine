@@ -26,7 +26,7 @@
 
 int main(int, char const**) {
   // Setup window
-  sf::RenderWindow window(sf::VideoMode(640, 400), "PlatformerEngine");
+  sf::RenderWindow window(sf::VideoMode(320, 320), "PlatformerEngine");
 
   sf::Image icon;
   if (!icon.loadFromFile(resourcePath() + "icon.png")) {
@@ -61,7 +61,7 @@ int main(int, char const**) {
     { 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1 },
   });
 
-  Character player(100, 100, 40, 40, map);
+  Character player(100, 100, 30, 40, map);
 
   // Game loop
   sf::Clock clock;
