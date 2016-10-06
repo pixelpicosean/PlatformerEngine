@@ -28,12 +28,6 @@ int main(int, char const**) {
   // Setup window
   sf::RenderWindow window(sf::VideoMode(320, 320), "PlatformerEngine");
 
-  sf::Image icon;
-  if (!icon.loadFromFile(resourcePath() + "icon.png")) {
-    return EXIT_FAILURE;
-  }
-  window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-
   // Initialize
   Map map(8, 8, {
     { 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1 },
