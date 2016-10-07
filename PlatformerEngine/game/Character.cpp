@@ -22,6 +22,17 @@ Character::Character(float x, float y, float w, float h, Map& map): MovingEntity
 }
 
 void Character::Update(sf::Time dt) {
+  // Update input flags
+  this->lastInputs[Input::Left] = this->inputs[Input::Left];
+  this->lastInputs[Input::Right] = this->inputs[Input::Right];
+  this->lastInputs[Input::Down] = this->inputs[Input::Down];
+  this->lastInputs[Input::Jump] = this->inputs[Input::Jump];
+
+  this->inputs[Input::Left] = sf::Keyboard::isKeyPressed(this->leftKey);
+  this->inputs[Input::Right] = sf::Keyboard::isKeyPressed(this->rightKey);
+  this->inputs[Input::Down] = sf::Keyboard::isKeyPressed(this->downKey);
+  this->inputs[Input::Jump] = sf::Keyboard::isKeyPressed(this->jumpKey);
+
   // Update states
   switch (this->currentState) {
     case State::Stand:
@@ -34,18 +45,18 @@ void Character::Update(sf::Time dt) {
         break;
       }
 
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) != sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+      if (this->inputs[Input::Left] != this->inputs[Input::Right]) {
         this->currentState = State::Walk;
         break;
       }
-      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+      else if (this->inputs[Input::Jump]) {
         this->speed.y = -this->jumpSpeed;
         this->currentState = State::Jump;
         break;
       }
 
       // Drop from one-way platform
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+      if (this->inputs[Input::Down]) {
         if (this->onOneWayPlatform) {
           this->position.y += ONE_WAY_PLATFORM_THRESHOD;
         }
@@ -57,12 +68,12 @@ void Character::Update(sf::Time dt) {
       this->sprite.setFillColor(sf::Color(125, 255, 125));
 
       // Horizontal movement
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) == sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+      if (this->inputs[Input::Left] == this->inputs[Input::Right]) {
         this->currentState = State::Stand;
         this->speed.x = this->speed.y = 0.0f;
         break;
       }
-      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+      else if (this->inputs[Input::Left]) {
         if (this->pushesLeftWall) {
           this->speed.x = 0.0f;
         }
@@ -70,7 +81,7 @@ void Character::Update(sf::Time dt) {
           this->speed.x = -this->walkSpeed;
         }
       }
-      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+      else if (this->inputs[Input::Right]) {
         if (this->pushesRightWall) {
           this->speed.x = 0.0f;
         }
@@ -80,7 +91,7 @@ void Character::Update(sf::Time dt) {
       }
 
       // Jump
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+      if (this->inputs[Input::Jump]) {
         this->speed.y = -this->jumpSpeed;
         this->currentState = State::Jump;
         break;
@@ -91,7 +102,7 @@ void Character::Update(sf::Time dt) {
       }
 
       // Drop from one-way platform
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+      if (this->inputs[Input::Down]) {
         if (this->onOneWayPlatform) {
           this->position.y += ONE_WAY_PLATFORM_THRESHOD;
         }
@@ -110,15 +121,15 @@ void Character::Update(sf::Time dt) {
         this->speed.y = std::max(this->speed.y, MAX_FALL_SPEED);
       }
       // - Jump
-      if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && this->speed.y < 0.0f) {
+      if (!this->inputs[Input::Jump] && this->speed.y < 0.0f) {
         this->speed.y = -std::min(std::abs(this->speed.y), this->minJumpSpeed);
       }
 
       // Horizontal movement
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) == sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+      if (this->inputs[Input::Left] == this->inputs[Input::Right]) {
         this->speed.x = 0.0f;
       }
-      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+      else if (this->inputs[Input::Left]) {
         if (this->pushesLeftWall) {
           this->speed.x = 0.0f;
         }
@@ -126,7 +137,7 @@ void Character::Update(sf::Time dt) {
           this->speed.x = -this->walkSpeed;
         }
       }
-      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+      else if (this->inputs[Input::Right]) {
         if (this->pushesRightWall) {
           this->speed.x = 0.0f;
         }
@@ -136,7 +147,7 @@ void Character::Update(sf::Time dt) {
       }
 
       if (this->isOnGround) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) == sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        if (this->inputs[Input::Left] == this->inputs[Input::Right]) {
           this->currentState = State::Stand;
           this->speed.x = this->speed.y = 0.0f;
         }
@@ -147,11 +158,11 @@ void Character::Update(sf::Time dt) {
       }
       // Ledge grab
       // - falling && not at ceiling && collide with wall and move towards it
-      else if (this->speed.y >= 0.0f && !this->isAtCeiling && ((this->pushesRightWall && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) || (this->pushesLeftWall && sf::Keyboard::isKeyPressed(sf::Keyboard::Left)))) {
+      else if (this->speed.y >= 0.0f && !this->isAtCeiling && ((this->pushesRightWall && this->inputs[Input::Right]) || (this->pushesLeftWall && this->inputs[Input::Left]))) {
         Vector2f aabbCornerOffset;
 
         // Calculate corner offset based moving direction
-        if (this->pushesRightWall && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        if (this->pushesRightWall && this->inputs[Input::Right]) {
           aabbCornerOffset = { this->aabb.halfSize.x, -this->aabb.halfSize.y };
         }
         else {
@@ -204,10 +215,10 @@ void Character::Update(sf::Time dt) {
       bool ledgeOnRight = !ledgeOnLeft;
 
       // Drop by either press the opposite direction or the down key
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || (ledgeOnLeft && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) || (ledgeOnRight && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))) {
+      if (this->inputs[Input::Down] || (ledgeOnLeft && this->inputs[Input::Right]) || (ledgeOnRight && this->inputs[Input::Left])) {
         this->currentState = State::Jump;
       }
-      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+      else if (this->inputs[Input::Jump]) {
         this->speed.y = -this->jumpSpeed;
         this->currentState = State::Jump;
       }

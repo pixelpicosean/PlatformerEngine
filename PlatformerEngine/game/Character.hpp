@@ -21,11 +21,11 @@ class Character : public MovingEntity {
       GrabLedge,
     };
 
-    enum class Input {
-      Left,
-      Right,
-      Down,
-      Jump,
+    struct Input {
+      static const int Left = 0;
+      static const int Right = 1;
+      static const int Down = 2;
+      static const int Jump = 3;
     };
 
   // Configs
@@ -33,6 +33,11 @@ class Character : public MovingEntity {
     float jumpSpeed = 410.0f;
     float walkSpeed = 160.0f;
     float minJumpSpeed = 200.0f;
+
+    sf::Keyboard::Key leftKey = sf::Keyboard::A;
+    sf::Keyboard::Key rightKey = sf::Keyboard::D;
+    sf::Keyboard::Key downKey = sf::Keyboard::S;
+    sf::Keyboard::Key jumpKey = sf::Keyboard::W;
 
   // Components & states
   public:
@@ -46,6 +51,10 @@ class Character : public MovingEntity {
 
     void Update(sf::Time dt);
     void Draw(sf::RenderTarget& frame);
+
+  protected:
+    bool inputs[4] = { false, false, false, false };
+    bool lastInputs[4] = { false, false, false, false };
 
   private:
     sf::Vector2i ledgeTile;
