@@ -12,7 +12,7 @@ Let's see what it'll look like after used in a serious indie game.
 
 [x] Basic map collision
 [x] Character movement
-[ ] Character input custimization
+[x] Character input custimization
 [ ] Coding style refactor
 [ ] Structure refactor
 [ ] Oryol project and setup
