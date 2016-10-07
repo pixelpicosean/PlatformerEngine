@@ -12,6 +12,10 @@
 const float GRAVITY = 980.0f;
 const float MAX_FALL_SPEED = 300.0f;
 
+const float GRAB_LEDGE_START_Y = 0.0f;
+const float GRAB_LEDGE_END_Y = 2.0f;
+const float GRAB_LEDGE_TILE_OFFSET_Y = -4.0f;
+
 Character::Character(float x, float y, float w, float h, Map& map): MovingEntity(x, y, w, h, map) {
   this->sprite.setSize(sf::Vector2f(w, h));
   this->sprite.setOrigin(w / 2, h / 2);
@@ -20,23 +24,23 @@ Character::Character(float x, float y, float w, float h, Map& map): MovingEntity
 void Character::Update(sf::Time dt) {
   // Update states
   switch (this->currentState) {
-    case STAND:
+    case State::Stand:
       this->sprite.setFillColor(sf::Color(255, 255, 255));
 
       this->speed.x = this->speed.y = 0.0f;
 
       if (!this->isOnGround) {
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
         break;
       }
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) != sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        this->currentState = WALK;
+        this->currentState = State::Walk;
         break;
       }
       else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
         this->speed.y = -this->jumpSpeed;
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
         break;
       }
 
@@ -49,12 +53,12 @@ void Character::Update(sf::Time dt) {
 
       break;
 
-    case WALK:
+    case State::Walk:
       this->sprite.setFillColor(sf::Color(125, 255, 125));
 
       // Horizontal movement
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) == sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        this->currentState = STAND;
+        this->currentState = State::Stand;
         this->speed.x = this->speed.y = 0.0f;
         break;
       }
@@ -78,11 +82,11 @@ void Character::Update(sf::Time dt) {
       // Jump
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
         this->speed.y = -this->jumpSpeed;
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
         break;
       }
       else if (!this->isOnGround) {
-        this->currentState = JUMP;
+        this->currentState = State::Jump;
         break;
       }
 
@@ -95,7 +99,7 @@ void Character::Update(sf::Time dt) {
 
       break;
 
-    case JUMP:
+    case State::Jump:
       this->sprite.setFillColor(sf::Color(150, 50, 250));
 
       // Vertical movement
@@ -133,21 +137,81 @@ void Character::Update(sf::Time dt) {
 
       if (this->isOnGround) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) == sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-          this->currentState = STAND;
+          this->currentState = State::Stand;
           this->speed.x = this->speed.y = 0.0f;
         }
         else {
-          this->currentState = WALK;
+          this->currentState = State::Walk;
           this->speed.y = 0.0f;
+        }
+      }
+      // Ledge grab
+      // - falling && not at ceiling && collide with wall and move towards it
+      else if (this->speed.y >= 0.0f && !this->isAtCeiling && ((this->pushesRightWall && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) || (this->pushesLeftWall && sf::Keyboard::isKeyPressed(sf::Keyboard::Left)))) {
+        Vector2f aabbCornerOffset;
+
+        // Calculate corner offset based moving direction
+        if (this->pushesRightWall && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+          aabbCornerOffset = { this->aabb.halfSize.x, -this->aabb.halfSize.y };
+        }
+        else {
+          aabbCornerOffset = { -this->aabb.halfSize.x - 1.0f, -this->aabb.halfSize.y };
+        }
+
+        int tileX, topY, bottomY;
+        tileX = this->map.GetMapTileXAtPoint(this->aabb.center.x + aabbCornerOffset.x);
+
+        // Need to look for a ledge from last frame since it already touches a wall and x won't change
+        if ((this->pushesLeftWall && this->pushedLeftWall) || (this->pushesRightWall && this->pushedRightWall)) {
+          topY = this->map.GetMapTileYAtPoint(this->lastPosition.y + this->aabbOffset.y + aabbCornerOffset.y + GRAB_LEDGE_START_Y);
+          bottomY = this->map.GetMapTileYAtPoint(this->aabb.center.y + aabbCornerOffset.y + GRAB_LEDGE_END_Y);
+        }
+        else {
+          topY = this->map.GetMapTileYAtPoint(this->aabb.center.y + aabbCornerOffset.y + GRAB_LEDGE_START_Y);
+          bottomY = this->map.GetMapTileYAtPoint(this->aabb.center.y + aabbCornerOffset.y + GRAB_LEDGE_END_Y);
+        }
+
+        for (int y = topY; y <= bottomY; ++y) {
+          // The tile is empty and the tile below it is solid
+          if (!this->map.IsObstacle(tileX, y) && this->map.IsObstacle(tileX, y + 1)) {
+            auto tileCorner = this->map.GetMapTilePosition(tileX, y + 1);
+            tileCorner.x -= (aabbCornerOffset.x > 0.0f ? 1.0f : -1.0f) * (this->map.tilesize / 2.0f);
+            tileCorner.y -= this->map.tilesize / 2.0f;
+
+            if (y > bottomY || ((this->aabb.center.y + aabbCornerOffset.y) - tileCorner.y <= GRAB_LEDGE_END_Y && tileCorner.y - (this->aabb.center.y + aabbCornerOffset.y) >= GRAB_LEDGE_START_Y)) {
+              // Ledge tile is finally found
+              this->ledgeTile.x = tileX;
+              this->ledgeTile.y = y + 1;
+
+              // Align to the tile
+              this->position.y = tileCorner.y - aabbCornerOffset.y - this->aabbOffset.y - GRAB_LEDGE_START_Y + GRAB_LEDGE_TILE_OFFSET_Y;
+
+              // Zero the speed
+              this->speed.x = this->speed.y = 0.0f;
+
+              // Change state
+              this->currentState = State::GrabLedge;
+              break;
+            }
+          }
         }
       }
 
       break;
 
-    case GRAB_EDGE:
-      break;
+    case State::GrabLedge:
+      bool ledgeOnLeft = this->ledgeTile.x * this->map.tilesize < this->position.x;
+      bool ledgeOnRight = !ledgeOnLeft;
 
-    default:
+      // Drop by either press the opposite direction or the down key
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || (ledgeOnLeft && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) || (ledgeOnRight && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))) {
+        this->currentState = State::Jump;
+      }
+      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        this->speed.y = -this->jumpSpeed;
+        this->currentState = State::Jump;
+      }
+
       break;
   }
 
