@@ -1,5 +1,5 @@
 # Xcode
-/PlatformerEngine.xcodeproj/xcuserdata
+xcuserdata/
 
 # Visual Studio
 *.suo
